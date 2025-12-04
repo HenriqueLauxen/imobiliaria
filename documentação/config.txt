@@ -1,0 +1,3 @@
+mySQL
+1. Acesse: cloud.digitalocean.com/databases/
+2. Selecione: MySQL; 

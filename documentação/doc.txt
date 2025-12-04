@@ -1,0 +1,50 @@
+1. STACK DO PROJETO
+Backend:
+- Java com Spring Boot
+- Spring Data JPA para acesso ao banco de dados
+- API REST com endpoints JSON
+
+Frontend:
+- React (JavaScript apenas)
+- Tailwind CSS
+- Vite como bundler e servidor de desenvolvimento
+
+Banco de Dados:
+- Estrutura relacional com tabelas para usuarios, bairros, tipos de imovel, imoveis e fotos
+
+2. FUNCIONALIDADE DE FOTOS
+O sistema permite gerenciar fotos dos imoveis cadastrados.
+
+Como funciona:
+- Cada foto esta vinculada a um imovel especifico
+- A tabela de fotos guarda o caminho/URL da imagem
+- O controller FotoImovelController expoe endpoints para listar, adicionar e remover fotos
+- A pagina PaginaFotos.jsx exibe a galeria de todas as fotos cadastradas
+- Interface com area de upload visual (ainda nao funcional para envio real de arquivos)
+
+Endpoints principais:
+- GET /fotos - lista todas as fotos
+- GET /fotos/{id} - busca uma foto especifica
+- POST /fotos - cadastra nova foto
+- DELETE /fotos/{id} - remove uma foto
+
+3. RELACIONAMENTOS DE IMOVEL
+Cada imovel cadastrado possui dois relacionamentos importantes:
+
+Relacionamento com Bairro:
+- Um imovel pertence a apenas um bairro
+- O bairro contem informacoes de localizacao (nome, cidade, estado)
+- No formulario do imovel, o usuario seleciona o bairro em um dropdown
+- O backend guarda a referencia ao bairro escolhido
+
+Relacionamento com Tipo de Imovel:
+- Um imovel tem apenas um tipo (casa, apartamento, terreno, etc)
+- O tipo de imovel define a categoria e descricao do imovel
+- No formulario, o usuario escolhe o tipo em um dropdown
+- O backend guarda a referencia ao tipo escolhido
+
+Como funciona no codigo:
+- A pagina PaginaImoveis.jsx carrega a lista de bairros e tipos via API
+- Quando o usuario cria ou edita um imovel, seleciona o ID do bairro e do tipo
+- O backend Spring Boot faz a ligacao automatica usando JPA
+- Na listagem, os dados do bairro e tipo aparecem junto com o imovel

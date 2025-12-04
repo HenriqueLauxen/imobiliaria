@@ -4,7 +4,7 @@ import api from '../services/api';
 function PaginaUsuarios() {
   const [modo, setModo] = useState('lista');
   const [usuarios, setUsuarios] = useState([]);
-  const [formulario, setFormulario] = useState({ nome: '', email: '', cargo: '' });
+  const [formulario, setFormulario] = useState({ nome: '', email: '', tipo: '' });
 
   useEffect(() => {
     carregarUsuarios();
@@ -29,7 +29,7 @@ function PaginaUsuarios() {
       }
       await carregarUsuarios();
       setModo('lista');
-      setFormulario({ nome: '', email: '', cargo: '' });
+      setFormulario({ nome: '', email: '', tipo: '' });
     } catch (error) {
       alert('Erro ao salvar usuário');
     }
@@ -80,7 +80,7 @@ function PaginaUsuarios() {
               <tr>
                 <th className="p-4 font-semibold">Nome</th>
                 <th className="p-4 font-semibold">Email</th>
-                <th className="p-4 font-semibold">Cargo</th>
+                <th className="p-4 font-semibold">Tipo</th>
                 <th className="p-4 font-semibold text-right">Ações</th>
               </tr>
             </thead>
@@ -91,7 +91,7 @@ function PaginaUsuarios() {
                   <td className="p-4 text-[#0B132B]/70">{usuario.email}</td>
                   <td className="p-4">
                     <span className="px-2 py-1 text-xs font-medium bg-[#0B132B]/10 rounded-full">
-                      {usuario.cargo}
+                      {usuario.tipo}
                     </span>
                   </td>
                   <td className="p-4 text-right space-x-2">
@@ -133,13 +133,13 @@ function PaginaUsuarios() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#0B132B] mb-2">Cargo</label>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Tipo</label>
               <select 
                 className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition bg-white"
-                value={formulario.cargo}
-                onChange={e => setFormulario({...formulario, cargo: e.target.value})}
+                value={formulario.tipo}
+                onChange={e => setFormulario({...formulario, tipo: e.target.value})}
               >
-                <option value="">Selecione um cargo...</option>
+                <option value="">Selecione um tipo...</option>
                 <option value="Administrador">Administrador</option>
                 <option value="Corretor">Corretor</option>
                 <option value="Gerente">Gerente</option>

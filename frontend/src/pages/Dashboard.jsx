@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
 
 function Dashboard() {
+  const [stats, setStats] = useState({
+    imoveis: 0,
+    bairros: 0,
+    tipos: 0,
+    usuarios: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    carregarEstatisticas();
+  }, []);
+
+  const carregarEstatisticas = async () => {
+    try {
+      const [imoveisData, bairrosData, tiposData, usuariosData] = await Promise.all([
+        api.get('/imoveis'),
+        api.get('/bairros'),
+        api.get('/tiposimoveis'),
+        api.get('/usuarios')
+      ]);
+      setStats({
+        imoveis: imoveisData.length,
+        bairros: bairrosData.length,
+        tipos: tiposData.length,
+        usuarios: usuariosData.length
+      });
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const cards = [
-    { titulo: 'Imóveis Cadastrados', valor: '124', icon: '🏠' },
-    { titulo: 'Bairros', valor: '18', icon: '🏘️' },
-    { titulo: 'Tipos de Imóvel', valor: '8', icon: '🏢' },
-    { titulo: 'Usuários Ativos', valor: '42', icon: '👥' },
+    { titulo: 'Imóveis Cadastrados', valor: stats.imoveis, icon: '🏠' },
+    { titulo: 'Bairros', valor: stats.bairros, icon: '🏘️' },
+    { titulo: 'Tipos de Imóvel', valor: stats.tipos, icon: '🏢' },
+    { titulo: 'Usuários Ativos', valor: stats.usuarios, icon: '👥' },
   ];
 
   return (
@@ -19,9 +53,13 @@ function Dashboard() {
           <div key={index} className="bg-white p-6 rounded-lg border border-[#0B132B]/10 hover:shadow-lg transition-all duration-300 group">
             <div className="flex justify-between items-start mb-4">
               <div className="text-4xl group-hover:scale-110 transition-transform duration-300">{card.icon}</div>
-              <span className="text-xs font-semibold text-[#0B132B]/60 bg-[#0B132B]/5 px-2 py-1 rounded">ATUALIZADO</span>
+              <span className="text-xs font-semibold text-[#0B132B]/60 bg-[#0B132B]/5 px-2 py-1 rounded">
+                {loading ? 'CARREGANDO' : 'ATUALIZADO'}
+              </span>
             </div>
-            <h3 className="text-4xl font-bold text-[#0B132B] mb-1">{card.valor}</h3>
+            <h3 className="text-4xl font-bold text-[#0B132B] mb-1">
+              {loading ? '...' : card.valor}
+            </h3>
             <p className="text-sm text-[#0B132B]/70 font-medium">{card.titulo}</p>
           </div>
         ))}

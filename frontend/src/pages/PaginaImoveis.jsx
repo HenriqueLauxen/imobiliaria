@@ -10,11 +10,24 @@ function PaginaImoveis() {
 
   const [formulario, setFormulario] = useState({
     titulo: '',
-    preco: '',
+    precoVenda: '',
+    precoAluguel: '',
+    finalidade: 'Venda',
+    status: 'Disponível',
+    dormitorios: '',
+    banheiros: '',
+    garagem: '',
+    areaTotal: '',
+    areaConstruida: '',
+    endereco: '',
+    numero: '',
+    complemento: '',
+    cep: '',
     bairro: null,
     tipoImovel: null,
-    area: '',
-    descricao: ''
+    descricao: '',
+    caracteristicas: '',
+    destaque: false
   });
 
   useEffect(() => {
@@ -52,7 +65,27 @@ function PaginaImoveis() {
       }
       await carregarDados();
       setModo('lista');
-      setFormulario({ titulo: '', preco: '', bairroId: '', tipoId: '', area: '', descricao: '' });
+      setFormulario({ 
+        titulo: '', 
+        precoVenda: '', 
+        precoAluguel: '',
+        finalidade: 'Venda',
+        status: 'Disponível',
+        dormitorios: '',
+        banheiros: '',
+        garagem: '',
+        areaTotal: '', 
+        areaConstruida: '',
+        endereco: '',
+        numero: '',
+        complemento: '',
+        cep: '',
+        bairroId: '', 
+        tipoId: '', 
+        descricao: '',
+        caracteristicas: '',
+        destaque: false
+      });
     } catch (error) {
       alert('Erro ao salvar imóvel');
     }
@@ -73,7 +106,14 @@ function PaginaImoveis() {
     setFormulario({
       ...imovel,
       bairroId: imovel.bairro?.id,
-      tipoId: imovel.tipoImovel?.id
+      tipoId: imovel.tipoImovel?.id,
+      precoVenda: imovel.precoVenda || '',
+      precoAluguel: imovel.precoAluguel || '',
+      areaTotal: imovel.areaTotal || '',
+      areaConstruida: imovel.areaConstruida || '',
+      dormitorios: imovel.dormitorios || '',
+      banheiros: imovel.banheiros || '',
+      garagem: imovel.garagem || ''
     });
     setModo('formulario');
   };
@@ -115,11 +155,17 @@ function PaginaImoveis() {
                     <button onClick={() => deletarImovel(imovel.id)} className="text-red-600 text-sm hover:underline">Excluir</button>
                   </div>
                 </div>
-                <p className="text-2xl font-light text-[#0B132B] mb-2">R$ {imovel.preco}</p>
+                <p className="text-2xl font-light text-[#0B132B] mb-2">
+                  {imovel.finalidade === 'Aluguel' 
+                    ? `R$ ${imovel.precoAluguel || '0'}/mês` 
+                    : `R$ ${imovel.precoVenda || '0'}`}
+                </p>
                 <div className="flex flex-wrap gap-2 text-sm text-[#0B132B]/70">
                   <span className="bg-[#0B132B]/5 px-2 py-1 rounded">{imovel.bairro?.nome}</span>
                   <span className="bg-[#0B132B]/5 px-2 py-1 rounded">{imovel.tipoImovel?.nome}</span>
-                  <span className="bg-[#0B132B]/5 px-2 py-1 rounded">{imovel.area} m²</span>
+                  <span className="bg-[#0B132B]/5 px-2 py-1 rounded">{imovel.areaTotal} m²</span>
+                  {imovel.dormitorios && <span className="bg-[#0B132B]/5 px-2 py-1 rounded">{imovel.dormitorios} dorm.</span>}
+                  <span className="bg-[#0B132B]/5 px-2 py-1 rounded">{imovel.finalidade}</span>
                 </div>
               </div>
             </div>
@@ -139,15 +185,51 @@ function PaginaImoveis() {
                 onChange={e => setFormulario({...formulario, titulo: e.target.value})}
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Finalidade</label>
+              <select 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition bg-white"
+                value={formulario.finalidade || ''}
+                onChange={e => setFormulario({...formulario, finalidade: e.target.value})}
+              >
+                <option value="Venda">Venda</option>
+                <option value="Aluguel">Aluguel</option>
+                <option value="Venda e Aluguel">Venda e Aluguel</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Status</label>
+              <select 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition bg-white"
+                value={formulario.status || ''}
+                onChange={e => setFormulario({...formulario, status: e.target.value})}
+              >
+                <option value="Disponível">Disponível</option>
+                <option value="Vendido">Vendido</option>
+                <option value="Alugado">Alugado</option>
+                <option value="Reservado">Reservado</option>
+              </select>
+            </div>
             
             <div>
-              <label className="block text-sm font-medium text-[#0B132B] mb-2">Preço (R$)</label>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Preço Venda (R$)</label>
               <input 
                 type="number" 
-                required
                 className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
-                value={formulario.preco}
-                onChange={e => setFormulario({...formulario, preco: e.target.value})}
+                value={formulario.precoVenda}
+                onChange={e => setFormulario({...formulario, precoVenda: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Preço Aluguel (R$/mês)</label>
+              <input 
+                type="number" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.precoAluguel}
+                onChange={e => setFormulario({...formulario, precoAluguel: e.target.value})}
               />
             </div>
 
@@ -156,8 +238,48 @@ function PaginaImoveis() {
               <input 
                 type="number" 
                 className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
-                value={formulario.area}
-                onChange={e => setFormulario({...formulario, area: e.target.value})}
+                value={formulario.areaTotal}
+                onChange={e => setFormulario({...formulario, areaTotal: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Área Construída (m²)</label>
+              <input 
+                type="number" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.areaConstruida}
+                onChange={e => setFormulario({...formulario, areaConstruida: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Dormitórios</label>
+              <input 
+                type="number" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.dormitorios}
+                onChange={e => setFormulario({...formulario, dormitorios: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Banheiros</label>
+              <input 
+                type="number" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.banheiros}
+                onChange={e => setFormulario({...formulario, banheiros: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Vagas Garagem</label>
+              <input 
+                type="number" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.garagem}
+                onChange={e => setFormulario({...formulario, garagem: e.target.value})}
               />
             </div>
 
@@ -186,11 +308,75 @@ function PaginaImoveis() {
             </div>
 
             <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Endereço</label>
+              <input 
+                type="text" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.endereco || ''}
+                onChange={e => setFormulario({...formulario, endereco: e.target.value})}
+                placeholder="Rua, Avenida..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Número</label>
+              <input 
+                type="text" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.numero || ''}
+                onChange={e => setFormulario({...formulario, numero: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Complemento</label>
+              <input 
+                type="text" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.complemento || ''}
+                onChange={e => setFormulario({...formulario, complemento: e.target.value})}
+                placeholder="Apto, Bloco..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">CEP</label>
+              <input 
+                type="text" 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
+                value={formulario.cep || ''}
+                onChange={e => setFormulario({...formulario, cep: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-[#0B132B] cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  className="w-5 h-5 rounded border-[#0B132B]/20"
+                  checked={formulario.destaque || false}
+                  onChange={e => setFormulario({...formulario, destaque: e.target.checked})}
+                />
+                Imóvel em Destaque
+              </label>
+            </div>
+
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-[#0B132B] mb-2">Descrição Detalhada</label>
               <textarea 
                 className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition h-32 resize-none"
-                value={formulario.descricao}
+                value={formulario.descricao || ''}
                 onChange={e => setFormulario({...formulario, descricao: e.target.value})}
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-[#0B132B] mb-2">Características</label>
+              <textarea 
+                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition h-24 resize-none"
+                value={formulario.caracteristicas || ''}
+                onChange={e => setFormulario({...formulario, caracteristicas: e.target.value})}
+                placeholder="Piscina, Churrasqueira, Ar condicionado..."
               />
             </div>
 

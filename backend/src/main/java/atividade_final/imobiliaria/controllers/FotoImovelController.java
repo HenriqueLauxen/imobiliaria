@@ -43,18 +43,18 @@ public class FotoImovelController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> insert(@RequestBody FotoImovelModel model) {
+    public ResponseEntity<FotoImovelModel> insert(@RequestBody FotoImovelModel model) {
         model = service.insert(model);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(model);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@RequestBody FotoImovelModel model, @PathVariable Integer id) {
+    public ResponseEntity<FotoImovelModel> update(@RequestBody FotoImovelModel model, @PathVariable Integer id) {
         try {
             model.setId(id);
             model = service.update(model);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(model);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

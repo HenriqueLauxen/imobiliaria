@@ -46,17 +46,17 @@ public class BairroController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> insert(@RequestBody BairroModel model) {
+    public ResponseEntity<BairroModel> insert(@RequestBody BairroModel model) {
         model = service.insert(model);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(model);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@RequestBody BairroModel model, @PathVariable Integer id) {
+    public ResponseEntity<BairroModel> update(@RequestBody BairroModel model, @PathVariable Integer id) {
         model.setId(id);
         model = service.update(model);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(model);
     }
 
     @DeleteMapping(value = "/{id}")

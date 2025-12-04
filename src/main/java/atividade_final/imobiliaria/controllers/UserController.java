@@ -1,14 +1,45 @@
-package atividade_final.imobiliaria.controllers;
+import java.net.URI;
+import java.util.stream.Collectors;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import atividade_final.imobiliaria.dtos.UserDTO;
+import atividade_final.imobiliaria.models.UserModel;
 
-@RestController
-@RequestMapping(value = "/users")
-public class UserController {
+@GetMapping()
+public ResponseEntity<List<UserDTO>> getAllUsers() {
+    List<UserModel> listaNormal = service.getAll();
+    List<UserDTO> listaDtos = listaNormal.stream()
+            .map(usuario -> new UserDTO(usuario))
+            .collect(Collectors.toList());
 
-    @RequestMapping(method = requestMethod.GET)
-    public String getAllUsers() {
-        return "Lista de Usuários";
-    }
+    return ResponseEntity.status(HttpStatus.OK).body(listaDtos);
 }
+
+@GetMapping("/{id}")
+public ResponseEntity<UserDTO> find(@PathVariable Integer id) {
+    UserModel model = service.find(id);
+    UserDTO dto = new UserDTO(model);
+    return ResponseEntity.status(HttpStatus.OK).body(dto);
+}
+
+@PostMapping
+public ResponseEntity<Void> insert(@RequestBody UserDTO dto) {
+    UserModel model = service.insert(dto);
+
+    URI uri = ServletUriComponentsBuilder
+            .fromCurrentRequest().path("/{id}")
+            .buildAndExpand(model.getId()).toUri();
+
+    return ResponseEntity.created(uri).build();
+}
+
+@PutMapping("/{id}")
+public ResponseEntity<Void> update(
+        @RequestBody UserDTO dto,
+        @PathVariable Integer id) {
+
+    dto.setId(id);
+    service.update(dto);
+
+    return ResponseEntity.noContent().build();
+}
+

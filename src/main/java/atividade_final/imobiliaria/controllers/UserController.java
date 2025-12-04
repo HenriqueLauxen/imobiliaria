@@ -1,4 +1,4 @@
-package com.example projeto.controllers;
+package atividade_final.imobiliaria.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

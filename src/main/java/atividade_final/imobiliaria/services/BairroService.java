@@ -1,4 +1,4 @@
-package com.example.demo.services;
+package atividade_final.imobiliaria.services;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.models.BairroModel;
-import com.example.demo.repositories.BairroRepository;
+import atividade_final.imobiliaria.models.BairroModel;
+import atividade_final.imobiliaria.repositories.BairroRepository;
 
 @Service
 public class BairroService {
@@ -35,17 +35,16 @@ public class BairroService {
     public BairroModel insert(BairroModel model) {
         return repository.save(model);
     }
- 
+
     public BairroModel update(BairroModel model) {
         try {
-            if(find(model.getId())!=null){
+            if (find(model.getId()) != null) {
                 return repository.save(model);
             }
             return null;
         } catch (Exception e) {
             return null;
         }
-
     }
 
     public void delete(Integer id) {

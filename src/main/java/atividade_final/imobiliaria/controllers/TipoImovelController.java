@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package atividade_final.imobiliaria.controllers;
 
 import java.net.URI;
 import java.util.List;
@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.demo.models.TipoImovelModel;
-import com.example.demo.services.BairroService;
-import com.example.demo.services.TipoImovelService;
-
+import atividade_final.imobiliaria.models.TipoImovelModel;
+import atividade_final.imobiliaria.services.TipoImovelService;
 
 @RestController
 @RequestMapping(value = "/tiposimoveis")
@@ -31,7 +29,7 @@ public class TipoImovelController {
     private TipoImovelService service;
 
     @GetMapping()
-    public ResponseEntity<List<TipoImovelModel>> getAllBairros() {
+    public ResponseEntity<List<TipoImovelModel>> getAllTiposImoveis() {
         List<TipoImovelModel> list = service.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
@@ -41,9 +39,8 @@ public class TipoImovelController {
         return service.getAll(pageable);
     }
 
-
     @GetMapping(value = "/{id}")
-        public ResponseEntity<TipoImovelModel> find(@PathVariable Integer id) {
+    public ResponseEntity<TipoImovelModel> find(@PathVariable Integer id) {
         TipoImovelModel model = service.find(id);
         return ResponseEntity.status(HttpStatus.OK).body(model);
     }
@@ -51,11 +48,9 @@ public class TipoImovelController {
     @PostMapping
     public ResponseEntity<Void> insert(@RequestBody TipoImovelModel model) {
         model = service.insert(model);
-        // return new ResponseEntity(model, HttpStatus.CREATED);
-        URI uri =
-        ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
         return ResponseEntity.created(uri).build();
-        }
+    }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> update(@RequestBody TipoImovelModel model, @PathVariable Integer id) {
@@ -69,6 +64,5 @@ public class TipoImovelController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

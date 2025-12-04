@@ -1,9 +1,9 @@
-package com.example.demo.repositories;
+package atividade_final.imobiliaria.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.models.BairroModel;
+import atividade_final.imobiliaria.models.BairroModel;
 
-public interface  BairroRepository extends JpaRepository<BairroModel, Integer>{
-    
+public interface BairroRepository extends JpaRepository<BairroModel, Integer> {
+
 }

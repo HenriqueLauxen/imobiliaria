@@ -1,5 +1,4 @@
-package com.example.demo.services;
-
+package atividade_final.imobiliaria.services;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.models.TipoImovelModel;
-import com.example.demo.repositories.BairroRepository;
-import com.example.demo.repositories.TipoImovelRepository;
+import atividade_final.imobiliaria.models.TipoImovelModel;
+import atividade_final.imobiliaria.repositories.TipoImovelRepository;
 
 @Service
 public class TipoImovelService {
@@ -37,17 +35,16 @@ public class TipoImovelService {
     public TipoImovelModel insert(TipoImovelModel model) {
         return repository.save(model);
     }
- 
+
     public TipoImovelModel update(TipoImovelModel model) {
         try {
-            if(find(model.getId())!=null){
+            if (find(model.getId()) != null) {
                 return repository.save(model);
             }
             return null;
         } catch (Exception e) {
             return null;
         }
-
     }
 
     public void delete(Integer id) {
@@ -55,4 +52,3 @@ public class TipoImovelService {
     }
 
 }
-

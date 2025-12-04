@@ -1,10 +1,9 @@
-package com.example.demo.repositories;
+package atividade_final.imobiliaria.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.models.TipoImovelModel;
+import atividade_final.imobiliaria.models.TipoImovelModel;
 
+public interface TipoImovelRepository extends JpaRepository<TipoImovelModel, Integer> {
 
-public interface  TipoImovelRepository extends JpaRepository<TipoImovelModel, Integer>{
-    
 }

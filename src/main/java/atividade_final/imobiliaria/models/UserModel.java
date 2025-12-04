@@ -9,8 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="usuarios")
-public class UserModel implements Serializable{
+@Table(name = "usuarios")
+public class UserModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -19,43 +19,66 @@ public class UserModel implements Serializable{
 
     private String nome;
 
-    public UserModel(){};
+    private String email;
 
-    public UserModel(int id, String nome){
+    private String tipo;
+
+    public UserModel() {}
+
+    public UserModel(Integer id, String nome, String email, String tipo) {
         super();
-        this.id =id;
-        this.nome=nome;
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.tipo = tipo;
     }
-
 
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
 
-    
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = super.hashCode();
+        int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((nome == null) ? 0 : nome.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!super.equals(obj))
+        if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
@@ -72,7 +95,5 @@ public class UserModel implements Serializable{
             return false;
         return true;
     }
-
-   
 
 }

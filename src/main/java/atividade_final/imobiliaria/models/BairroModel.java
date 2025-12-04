@@ -1,24 +1,20 @@
-package com.example.demo.models;
+package atividade_final.imobiliaria.models;
 
 import java.io.Serializable;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "bairros")
-@Getter
-@Setter
-public class BairroModel implements Serializable{
+public class BairroModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nome;
@@ -31,16 +27,64 @@ public class BairroModel implements Serializable{
 
     private String cepFinal;
 
-    public BairroModel(){};
+    public BairroModel() {}
 
-    public BairroModel(int id, String nome, String cidade, String estado, String cepInicial, String cepFinal){
+    public BairroModel(Integer id, String nome, String cidade, String estado, String cepInicial, String cepFinal) {
         super();
-        this.id =id;
-        this.nome=nome;
-        this.cidade=cidade;
-        this.estado=estado;
-        this.cepInicial=cepInicial;
-        this.cepFinal=cepFinal;
+        this.id = id;
+        this.nome = nome;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.cepInicial = cepInicial;
+        this.cepFinal = cepFinal;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getCepInicial() {
+        return cepInicial;
+    }
+
+    public void setCepInicial(String cepInicial) {
+        this.cepInicial = cepInicial;
+    }
+
+    public String getCepFinal() {
+        return cepFinal;
+    }
+
+    public void setCepFinal(String cepFinal) {
+        this.cepFinal = cepFinal;
     }
 
     @Override
@@ -74,8 +118,4 @@ public class BairroModel implements Serializable{
         return true;
     }
 
-    
-
-
-  
 }

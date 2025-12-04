@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package atividade_final.imobiliaria.controllers;
 
 import java.net.URI;
 import java.util.List;
@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.demo.models.BairroModel;
-import com.example.demo.services.BairroService;
+import atividade_final.imobiliaria.models.BairroModel;
+import atividade_final.imobiliaria.services.BairroService;
 
 @RestController
 @RequestMapping(value = "/bairros")
@@ -39,9 +39,8 @@ public class BairroController {
         return service.getAll(pageable);
     }
 
-
     @GetMapping(value = "/{id}")
-        public ResponseEntity<BairroModel> find(@PathVariable Integer id) {
+    public ResponseEntity<BairroModel> find(@PathVariable Integer id) {
         BairroModel model = service.find(id);
         return ResponseEntity.status(HttpStatus.OK).body(model);
     }
@@ -49,11 +48,9 @@ public class BairroController {
     @PostMapping
     public ResponseEntity<Void> insert(@RequestBody BairroModel model) {
         model = service.insert(model);
-        // return new ResponseEntity(model, HttpStatus.CREATED);
-        URI uri =
-        ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
         return ResponseEntity.created(uri).build();
-        }
+    }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> update(@RequestBody BairroModel model, @PathVariable Integer id) {
@@ -67,6 +64,5 @@ public class BairroController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

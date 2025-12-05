@@ -1,3 +1,10 @@
+esse não é um repositorio para executar.
+você encontra
+Backend: https://github.com/HenriqueLauxen/imobiliaria-be
+Frontend: https://github.com/HenriqueLauxen/imobiliaria-fe
+
+
+
 ## codes
 
 requisitos

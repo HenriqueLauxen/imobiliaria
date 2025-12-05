@@ -7,11 +7,11 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-        '/usuarios': 'http://localhost:8080',
-        '/bairros': 'http://localhost:8080',
-        '/tiposimoveis': 'http://localhost:8080',
-        '/imoveis': 'http://localhost:8080',
-        '/fotos': 'http://localhost:8080'
+        '/api': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
     }
   }
 })

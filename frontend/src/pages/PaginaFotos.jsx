@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { Pencil, Trash2, Upload } from 'lucide-react';
 import api from '../services/api';
+import Loading from '../components/Loading';
 
 function PaginaFotos() {
   const [modo, setModo] = useState('lista');
   const [fotos, setFotos] = useState([]);
   const [imoveis, setImoveis] = useState([]);
   const [formulario, setFormulario] = useState({ 
-    nomeArquivo: '', 
-    caminho: '', 
     capa: false, 
     ordem: 1,
     imovelId: ''
   });
+  const [arquivo, setArquivo] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     carregarDados();
@@ -19,6 +23,7 @@ function PaginaFotos() {
 
   const carregarDados = async () => {
     try {
+      setLoading(true);
       const [fotosData, imoveisData] = await Promise.all([
         api.get('/fotos'),
         api.get('/imoveis')
@@ -27,27 +32,58 @@ function PaginaFotos() {
       setImoveis(imoveisData);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const salvarFoto = async (e) => {
     e.preventDefault();
-    try {
-      const payload = {
-        ...formulario,
-        imovel: imoveis.find(i => i.id == formulario.imovelId)
-      };
+    
+    if (!arquivo && !formulario.id) {
+      alert('Selecione uma imagem para upload');
+      return;
+    }
 
+    try {
+      setUploading(true);
+      
       if (formulario.id) {
+        // Edição - atualiza apenas metadados
+        const payload = {
+          ...formulario,
+          imovel: imoveis.find(i => i.id == formulario.imovelId)
+        };
         await api.put(`/fotos/${formulario.id}`, payload);
       } else {
-        await api.post('/fotos', payload);
+        // Novo upload
+        const formData = new FormData();
+        formData.append('file', arquivo);
+        formData.append('imovelId', formulario.imovelId);
+        formData.append('capa', formulario.capa);
+        formData.append('ordem', formulario.ordem);
+
+        const response = await fetch('/api/fotos/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Erro ao fazer upload');
+        }
       }
+      
       await carregarDados();
       setModo('lista');
-      setFormulario({ nomeArquivo: '', caminho: '', capa: false, ordem: 1, imovelId: '' });
+      setFormulario({ capa: false, ordem: 1, imovelId: '' });
+      setArquivo(null);
+      setPreviewUrl(null);
     } catch (error) {
-      alert('Erro ao salvar foto');
+      console.error('Erro ao salvar foto:', error);
+      alert('Erro ao salvar foto: ' + error.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -64,9 +100,14 @@ function PaginaFotos() {
 
   const editarFoto = (foto) => {
     setFormulario({
-      ...foto,
-      imovelId: foto.imovel?.id
+      id: foto.id,
+      capa: foto.capa,
+      ordem: foto.ordem,
+      imovelId: foto.imovel?.id,
+      caminho: foto.caminho,
+      nomeArquivo: foto.nomeArquivo
     });
+    setPreviewUrl(foto.caminho);
     setModo('formulario');
   };
 
@@ -92,7 +133,9 @@ function PaginaFotos() {
         )}
       </div>
 
-      {modo === 'lista' ? (
+      {loading ? (
+        <Loading mensagem="Carregando fotos..." />
+      ) : modo === 'lista' ? (
         <>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {fotos.map((foto) => (
@@ -120,18 +163,14 @@ function PaginaFotos() {
                     className="text-[#FFFFE4] hover:scale-110 transition"
                     title="Editar"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                    </svg>
+                    <Pencil size={32} />
                   </button>
                   <button 
                     onClick={() => deletarFoto(foto.id)}
                     className="text-[#FFFFE4] hover:scale-110 transition"
                     title="Excluir"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                    </svg>
+                    <Trash2 size={32} />
                   </button>
                 </div>
               </div>
@@ -149,28 +188,63 @@ function PaginaFotos() {
             {formulario.id ? 'Editar Foto' : 'Nova Foto'}
           </h2>
           <form onSubmit={salvarFoto} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-[#0B132B] mb-2">Nome do Arquivo</label>
-              <input 
-                type="text" 
-                required
-                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
-                value={formulario.nomeArquivo}
-                onChange={e => setFormulario({...formulario, nomeArquivo: e.target.value})}
-                placeholder="Ex: foto_frente.jpg"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#0B132B] mb-2">URL/Caminho da Imagem</label>
-              <input 
-                type="text" 
-                required
-                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
-                value={formulario.caminho}
-                onChange={e => setFormulario({...formulario, caminho: e.target.value})}
-                placeholder="https://exemplo.com/imagem.jpg"
-              />
-            </div>
+            {/* Upload de Imagem */}
+            {!formulario.id && (
+              <div>
+                <label className="block text-sm font-medium text-[#0B132B] mb-2">Selecionar Imagem</label>
+                <div 
+                  className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+                    ${previewUrl ? 'border-[#0B132B]' : 'border-[#0B132B]/20 hover:border-[#0B132B]/50'}`}
+                  onClick={() => document.getElementById('fileInput').click()}
+                >
+                  {previewUrl ? (
+                    <div className="relative">
+                      <img 
+                        src={previewUrl} 
+                        alt="Preview" 
+                        className="max-h-48 mx-auto rounded-md object-contain"
+                      />
+                      <p className="mt-2 text-sm text-[#0B132B]/60">{arquivo?.name}</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-[#0B132B]/50">
+                      <Upload size={40} />
+                      <p className="text-sm">Clique para selecionar uma imagem</p>
+                      <p className="text-xs">JPG, PNG ou GIF (máx. 5MB)</p>
+                    </div>
+                  )}
+                </div>
+                <input 
+                  id="fileInput"
+                  type="file" 
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setArquivo(file);
+                      setPreviewUrl(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Preview da imagem em edição */}
+            {formulario.id && previewUrl && (
+              <div>
+                <label className="block text-sm font-medium text-[#0B132B] mb-2">Imagem Atual</label>
+                <div className="border border-[#0B132B]/20 rounded-lg p-4 text-center">
+                  <img 
+                    src={previewUrl} 
+                    alt="Imagem atual" 
+                    className="max-h-48 mx-auto rounded-md object-contain"
+                  />
+                  <p className="mt-2 text-sm text-[#0B132B]/60">{formulario.nomeArquivo}</p>
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-[#0B132B] mb-2">Imóvel</label>
               <select 
@@ -209,7 +283,9 @@ function PaginaFotos() {
                 type="button"
                 onClick={() => {
                   setModo('lista');
-                  setFormulario({ nomeArquivo: '', caminho: '', capa: false, ordem: 1, imovelId: '' });
+                  setFormulario({ capa: false, ordem: 1, imovelId: '' });
+                  setArquivo(null);
+                  setPreviewUrl(null);
                 }}
                 className="px-6 py-2 rounded-md border border-[#0B132B]/20 text-[#0B132B] hover:bg-gray-50 transition"
               >
@@ -217,9 +293,17 @@ function PaginaFotos() {
               </button>
               <button 
                 type="submit"
-                className="px-6 py-2 rounded-md bg-[#0B132B] text-[#FFFFE4] hover:bg-[#0B132B]/90 transition shadow-md"
+                disabled={uploading}
+                className="px-6 py-2 rounded-md bg-[#0B132B] text-[#FFFFE4] hover:bg-[#0B132B]/90 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                Salvar
+                {uploading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-[#FFFFE4]/30 border-t-[#FFFFE4] rounded-full animate-spin"></div>
+                    Enviando...
+                  </>
+                ) : (
+                  'Salvar'
+                )}
               </button>
             </div>
           </form>

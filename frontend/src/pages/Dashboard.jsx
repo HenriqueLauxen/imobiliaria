@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Home, MapPin, Building, Users } from 'lucide-react';
 import api from '../services/api';
+import Loading from '../components/Loading';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -36,11 +38,22 @@ function Dashboard() {
   };
 
   const cards = [
-    { titulo: 'Imóveis Cadastrados', valor: stats.imoveis, icon: '🏠' },
-    { titulo: 'Bairros', valor: stats.bairros, icon: '🏘️' },
-    { titulo: 'Tipos de Imóvel', valor: stats.tipos, icon: '🏢' },
-    { titulo: 'Usuários Ativos', valor: stats.usuarios, icon: '👥' },
+    { titulo: 'Imóveis Cadastrados', valor: stats.imoveis, icon: <Home size={40} className="text-[#0B132B]" /> },
+    { titulo: 'Bairros', valor: stats.bairros, icon: <MapPin size={40} className="text-[#0B132B]" /> },
+    { titulo: 'Tipos de Imóvel', valor: stats.tipos, icon: <Building size={40} className="text-[#0B132B]" /> },
+    { titulo: 'Usuários Ativos', valor: stats.usuarios, icon: <Users size={40} className="text-[#0B132B]" /> },
   ];
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl font-light text-[#0B132B] mb-8 border-b border-[#0B132B]/10 pb-4">
+          Visão Geral
+        </h1>
+        <Loading mensagem="Carregando estatísticas..." />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -54,11 +67,11 @@ function Dashboard() {
             <div className="flex justify-between items-start mb-4">
               <div className="text-4xl group-hover:scale-110 transition-transform duration-300">{card.icon}</div>
               <span className="text-xs font-semibold text-[#0B132B]/60 bg-[#0B132B]/5 px-2 py-1 rounded">
-                {loading ? 'CARREGANDO' : 'ATUALIZADO'}
+                ATUALIZADO
               </span>
             </div>
             <h3 className="text-4xl font-bold text-[#0B132B] mb-1">
-              {loading ? '...' : card.valor}
+              {card.valor}
             </h3>
             <p className="text-sm text-[#0B132B]/70 font-medium">{card.titulo}</p>
           </div>
@@ -83,7 +96,7 @@ function Dashboard() {
           <h2 className="text-xl font-semibold text-[#0B132B] mb-4">Status do Sistema</h2>
           <div className="flex items-center gap-2 text-green-600 bg-green-50 p-4 rounded border border-green-100">
             <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="font-medium">Todos os serviços operando normalmente</span>
+            <span className="font-medium">Tudo em ordem</span>
           </div>
         </div>
       </div>

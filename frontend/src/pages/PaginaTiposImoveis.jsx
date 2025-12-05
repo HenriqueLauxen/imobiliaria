@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 import api from '../services/api';
+import Loading from '../components/Loading';
 
 function PaginaTiposImoveis() {
   const [modo, setModo] = useState('lista');
   const [tipos, setTipos] = useState([]);
   const [formulario, setFormulario] = useState({ nome: '', descricao: '' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     carregarTipos();
@@ -12,10 +15,13 @@ function PaginaTiposImoveis() {
 
   const carregarTipos = async () => {
     try {
+      setLoading(true);
       const dados = await api.get('/tiposimoveis');
       setTipos(dados);
     } catch (error) {
       console.error("Erro ao carregar tipos:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,7 +79,9 @@ function PaginaTiposImoveis() {
         )}
       </div>
 
-      {modo === 'lista' ? (
+      {loading ? (
+        <Loading mensagem="Carregando tipos de imóvel..." />
+      ) : modo === 'lista' ? (
         <div className="bg-white rounded-lg border border-[#0B132B]/10 overflow-hidden">
           <ul className="divide-y divide-[#0B132B]/10">
             {tipos.map((tipo) => (
@@ -83,8 +91,12 @@ function PaginaTiposImoveis() {
                   <p className="text-sm text-[#0B132B]/60 mt-1">{tipo.descricao}</p>
                 </div>
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-4">
-                  <button onClick={() => editarTipo(tipo)} className="text-blue-600 hover:underline text-sm font-medium">Editar</button>
-                  <button onClick={() => deletarTipo(tipo.id)} className="text-red-600 hover:underline text-sm font-medium">Excluir</button>
+                  <button onClick={() => editarTipo(tipo)} className="text-blue-600 hover:underline text-sm font-medium" title="Editar">
+                    <Pencil size={18} />
+                  </button>
+                  <button onClick={() => deletarTipo(tipo.id)} className="text-red-600 hover:underline text-sm font-medium" title="Excluir">
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </li>
             ))}

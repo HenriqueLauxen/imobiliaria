@@ -10,7 +10,7 @@ Frontend:
 - Vite como bundler e servidor de desenvolvimento
 
 Banco de Dados:
-- Estrutura relacional com tabelas para usuarios, bairros, tipos de imovel, imoveis e fotos
+- supabase
 
 2. FUNCIONALIDADE DE FOTOS
 O sistema permite gerenciar fotos dos imoveis cadastrados.

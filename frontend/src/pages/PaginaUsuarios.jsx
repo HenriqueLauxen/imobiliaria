@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 import api from '../services/api';
+import Loading from '../components/Loading';
 
 function PaginaUsuarios() {
   const [modo, setModo] = useState('lista');
   const [usuarios, setUsuarios] = useState([]);
   const [formulario, setFormulario] = useState({ nome: '', email: '', tipo: '' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     carregarUsuarios();
@@ -12,10 +15,13 @@ function PaginaUsuarios() {
 
   const carregarUsuarios = async () => {
     try {
+      setLoading(true);
       const dados = await api.get('/usuarios');
       setUsuarios(dados);
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,7 +79,9 @@ function PaginaUsuarios() {
         )}
       </div>
 
-      {modo === 'lista' ? (
+      {loading ? (
+        <Loading mensagem="Carregando usuários..." />
+      ) : modo === 'lista' ? (
         <div className="bg-white rounded-lg border border-[#0B132B]/10 overflow-hidden">
           <table className="w-full text-left">
             <thead className="bg-[#0B132B]/5 text-[#0B132B]">
@@ -95,12 +103,15 @@ function PaginaUsuarios() {
                     </span>
                   </td>
                   <td className="p-4 text-right space-x-2">
-                    <button onClick={() => editarUsuario(usuario)} className="text-blue-600 hover:underline text-sm">Editar</button>
+                    <button onClick={() => editarUsuario(usuario)} className="text-blue-600 hover:underline text-sm" title="Editar">
+                      <Pencil size={18} className="inline" />
+                    </button>
                     <button 
                       onClick={() => deletarUsuario(usuario.id)}
                       className="text-red-600 hover:underline text-sm"
+                      title="Excluir"
                     >
-                      Excluir
+                      <Trash2 size={18} className="inline" />
                     </button>
                   </td>
                 </tr>

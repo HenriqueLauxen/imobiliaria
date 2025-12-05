@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 import api from '../services/api';
+import Loading from '../components/Loading';
 
 function PaginaBairros() {
   const [modo, setModo] = useState('lista');
   const [bairros, setBairros] = useState([]);
   const [formulario, setFormulario] = useState({ nome: '', cidade: 'Panambi', estado: 'RS' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     carregarBairros();
@@ -12,10 +15,13 @@ function PaginaBairros() {
 
   const carregarBairros = async () => {
     try {
+      setLoading(true);
       const dados = await api.get('/bairros');
       setBairros(dados);
     } catch (error) {
       console.error("Erro ao carregar bairros:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,15 +79,21 @@ function PaginaBairros() {
         )}
       </div>
 
-      {modo === 'lista' ? (
+      {loading ? (
+        <Loading mensagem="Carregando bairros..." />
+      ) : modo === 'lista' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {bairros.map((bairro) => (
             <div key={bairro.id} className="bg-white p-6 rounded-lg border border-[#0B132B]/10 hover:shadow-md transition group">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-xl font-bold text-[#0B132B]">{bairro.nome}</h3>
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                  <button onClick={() => editarBairro(bairro)} className="text-blue-600 text-sm hover:underline">Editar</button>
-                  <button onClick={() => deletarBairro(bairro.id)} className="text-red-600 text-sm hover:underline">Excluir</button>
+                  <button onClick={() => editarBairro(bairro)} className="text-blue-600 text-sm hover:underline" title="Editar">
+                    <Pencil size={18} />
+                  </button>
+                  <button onClick={() => deletarBairro(bairro.id)} className="text-red-600 text-sm hover:underline" title="Excluir">
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
               <p className="text-[#0B132B]/60 text-sm">{bairro.cidade} - {bairro.estado}</p>

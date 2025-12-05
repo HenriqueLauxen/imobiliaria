@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 import api from '../services/api';
+import Loading from '../components/Loading';
 
 function PaginaImoveis() {
   const [modo, setModo] = useState('lista');
@@ -7,6 +9,7 @@ function PaginaImoveis() {
   const [bairros, setBairros] = useState([]);
   const [tipos, setTipos] = useState([]);
   const [imoveis, setImoveis] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [formulario, setFormulario] = useState({
     titulo: '',
@@ -36,6 +39,7 @@ function PaginaImoveis() {
 
   const carregarDados = async () => {
     try {
+      setLoading(true);
       const [imoveisData, bairrosData, tiposData] = await Promise.all([
         api.get('/imoveis'),
         api.get('/bairros'),
@@ -46,6 +50,8 @@ function PaginaImoveis() {
       setTipos(tiposData);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -140,7 +146,9 @@ function PaginaImoveis() {
         )}
       </div>
 
-      {modo === 'lista' ? (
+      {loading ? (
+        <Loading mensagem="Carregando imóveis..." />
+      ) : modo === 'lista' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {imoveis.map((imovel) => (
             <div key={imovel.id} className="bg-white p-6 rounded-lg border border-[#0B132B]/10 hover:shadow-lg transition group flex flex-col md:flex-row gap-6">
@@ -151,8 +159,12 @@ function PaginaImoveis() {
                 <div className="flex justify-between items-start">
                   <h3 className="text-xl font-bold text-[#0B132B] mb-2">{imovel.titulo}</h3>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                    <button onClick={() => editarImovel(imovel)} className="text-blue-600 text-sm hover:underline">Editar</button>
-                    <button onClick={() => deletarImovel(imovel.id)} className="text-red-600 text-sm hover:underline">Excluir</button>
+                    <button onClick={() => editarImovel(imovel)} className="text-blue-600 text-sm hover:underline" title="Editar">
+                      <Pencil size={18} />
+                    </button>
+                    <button onClick={() => deletarImovel(imovel.id)} className="text-red-600 text-sm hover:underline" title="Excluir">
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </div>
                 <p className="text-2xl font-light text-[#0B132B] mb-2">

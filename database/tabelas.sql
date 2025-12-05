@@ -1,103 +1,112 @@
--- criar o bd
-CREATE DATABASE imobiliaria;
-USE imobiliaria;
-
--- tabela usuarios
+-- criar tabela usuarios
 CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    tipo ENUM('administrador','cliente','corretor') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    senha TEXT NOT NULL,
+    tipo TEXT NOT NULL CHECK (tipo IN ('administrador','cliente','corretor')),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- tabela bairros
+-- criar tabela bairros
 CREATE TABLE bairros (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    cidade VARCHAR(255) NOT NULL,
-    estado VARCHAR(255) NOT NULL,
-    cep_inicial VARCHAR(20),
-    cep_final VARCHAR(20),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome TEXT NOT NULL,
+    cidade TEXT NOT NULL,
+    estado TEXT NOT NULL,
+    cep_inicial TEXT,
+    cep_final TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- tabela tipos_imoveis
+-- criar tabela tipos_imoveis
 CREATE TABLE tipos_imoveis (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome TEXT NOT NULL,
     descricao TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- tabela imoveis
+-- criar tabela imoveis
 CREATE TABLE imoveis (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(255) NOT NULL,
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    titulo TEXT NOT NULL,
     descricao TEXT,
     
-    preco_venda DECIMAL(15,2),
-    preco_aluguel DECIMAL(15,2),
+    preco_venda NUMERIC(15,2),
+    preco_aluguel NUMERIC(15,2),
 
-    finalidade ENUM('Residencial','Comercial') NOT NULL,
-    status ENUM('Ativo','Inativo','Vendido','Alugado') NOT NULL,
+    finalidade TEXT NOT NULL CHECK (finalidade IN ('Residencial','Comercial')),
+    status TEXT NOT NULL CHECK (status IN ('Ativo','Inativo','Vendido','Alugado')),
 
     dormitorios INT,
     banheiros INT,
     garagem INT,
 
-    area_total DECIMAL(15,2),
-    area_construida DECIMAL(15,2),
+    area_total NUMERIC(15,2),
+    area_construida NUMERIC(15,2),
 
-    endereco VARCHAR(255),
-    numero VARCHAR(50),
-    complemento VARCHAR(255),
-    cep VARCHAR(20),
+    endereco TEXT,
+    numero TEXT,
+    complemento TEXT,
+    cep TEXT,
 
     caracteristicas TEXT,
     destaque BOOLEAN DEFAULT FALSE,
 
-    tipo_imovel_id INT,
-    bairro_id INT,
-    usuario_id INT,
+    tipo_imovel_id INT REFERENCES tipos_imoveis(id) ON DELETE SET NULL,
+    bairro_id INT REFERENCES bairros(id) ON DELETE SET NULL,
+    usuario_id INT REFERENCES usuarios(id) ON DELETE SET NULL,
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_imovel_tipo
-        FOREIGN KEY (tipo_imovel_id)
-        REFERENCES tipos_imoveis(id)
-        ON DELETE SET NULL,
-
-    CONSTRAINT fk_imovel_bairro
-        FOREIGN KEY (bairro_id)
-        REFERENCES bairros(id)
-        ON DELETE SET NULL,
-
-    CONSTRAINT fk_imovel_usuario
-        FOREIGN KEY (usuario_id)
-        REFERENCES usuarios(id)
-        ON DELETE SET NULL
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- tabela fotos_imoveis
+-- criar tabela fotos_imoveis
 CREATE TABLE fotos_imoveis (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    imovel_id INT NOT NULL,
-    nome_arquivo VARCHAR(255) NOT NULL,
-    caminho VARCHAR(500) NOT NULL,
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    imovel_id INT NOT NULL REFERENCES imoveis(id) ON DELETE CASCADE,
+    nome_arquivo TEXT NOT NULL,
+    caminho TEXT NOT NULL,
     capa BOOLEAN DEFAULT FALSE,
     ordem INT DEFAULT 0,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_foto_imovel
-        FOREIGN KEY (imovel_id)
-        REFERENCES imoveis(id)
-        ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- função para atualizar updated_at
+CREATE OR REPLACE FUNCTION atualizar_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- triggers usuarios
+CREATE TRIGGER trg_usuarios_update
+BEFORE UPDATE ON usuarios
+FOR EACH ROW EXECUTE FUNCTION atualizar_updated_at();
+
+-- triggers bairros
+CREATE TRIGGER trg_bairros_update
+BEFORE UPDATE ON bairros
+FOR EACH ROW EXECUTE FUNCTION atualizar_updated_at();
+
+-- triggers tipos_imoveis
+CREATE TRIGGER trg_tipos_update
+BEFORE UPDATE ON tipos_imoveis
+FOR EACH ROW EXECUTE FUNCTION atualizar_updated_at();
+
+-- triggers imoveis
+CREATE TRIGGER trg_imoveis_update
+BEFORE UPDATE ON imoveis
+FOR EACH ROW EXECUTE FUNCTION atualizar_updated_at();
+
+-- triggers fotos_imoveis
+CREATE TRIGGER trg_fotos_update
+BEFORE UPDATE ON fotos_imoveis
+FOR EACH ROW EXECUTE FUNCTION atualizar_updated_at();

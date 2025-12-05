@@ -1,5 +1,8 @@
 package atividade_final.imobiliaria.services;
 
+import java.io.IOException;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,9 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.UUID;
 
 @Service
 public class SupabaseStorageService {
@@ -46,10 +46,23 @@ public class SupabaseStorageService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + supabaseKey);
         headers.set("apikey", supabaseKey);
-        headers.setContentType(MediaType.parseMediaType(file.getContentType()));
+        String contentType = file.getContentType();
+        if (contentType != null) {
+            headers.setContentType(MediaType.parseMediaType(contentType));
+        } else {
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        }
 
         HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
-        restTemplate.exchange(uploadUrl, HttpMethod.POST, requestEntity, String.class);
+        
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uploadUrl, HttpMethod.POST, requestEntity, String.class);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new IOException("Erro no upload para Supabase: " + response.getBody());
+            }
+        } catch (Exception e) {
+            throw new IOException("Erro ao fazer upload para Supabase: " + e.getMessage(), e);
+        }
         
         return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + filePath;
     }

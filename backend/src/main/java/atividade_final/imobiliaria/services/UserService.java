@@ -35,10 +35,9 @@ public class UserService {
     }
 
     public UserModel update(UserDTO dto) {
+        UserModel model = find(dto.getId());
         try {
-            if (find(dto.getId()) != null) {
-                UserModel model = new UserModel();
-                model.setId(dto.getId());
+            if (model != null) {
                 model.setNome(dto.getNome());
                 model.setEmail(dto.getEmail());
                 model.setTipo(dto.getTipo());

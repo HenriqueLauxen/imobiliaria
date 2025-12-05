@@ -56,7 +56,7 @@ public class FotoImovelController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
         return ResponseEntity.created(uri).body(model);
     }
-    
+
     @PostMapping(value = "/upload")
     public ResponseEntity<?> uploadFoto(
             @RequestParam("file") MultipartFile file,
@@ -91,4 +91,3 @@ public class FotoImovelController {
     }
 
 }
-

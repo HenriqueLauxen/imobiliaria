@@ -43,18 +43,20 @@ public class ImovelController {
     }
 
     @PostMapping
-    public ResponseEntity<ImovelModel> insert(@RequestBody ImovelModel model) {
+    public ResponseEntity<Void> insert(@RequestBody ImovelModel model) {
         model = service.insert(model);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
-        return ResponseEntity.created(uri).body(model);
-    }
+        // return new ResponseEntity(model, HttpStatus.CREATED);
+        URI uri =
+        ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
+        return ResponseEntity.created(uri).build();
+        }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ImovelModel> update(@RequestBody ImovelModel model, @PathVariable Integer id) {
+    public ResponseEntity<Void> update(@RequestBody ImovelModel model, @PathVariable Integer id) {
         try {
             model.setId(id);
             model = service.update(model);
-            return ResponseEntity.ok(model);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

@@ -2,3 +2,4 @@
 /node_modules/lucide-react
 /backend/.mvn
 /backend/target
+/node_modules/react/cjs

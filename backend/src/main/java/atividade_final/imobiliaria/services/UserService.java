@@ -30,6 +30,7 @@ public class UserService {
         UserModel model = new UserModel();
         model.setNome(dto.getNome());
         model.setEmail(dto.getEmail());
+        model.setSenha(dto.getSenha());
         model.setTipo(dto.getTipo());
         return repository.save(model);
     }
@@ -40,6 +41,9 @@ public class UserService {
             if (model != null) {
                 model.setNome(dto.getNome());
                 model.setEmail(dto.getEmail());
+                if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
+                    model.setSenha(dto.getSenha());
+                }
                 model.setTipo(dto.getTipo());
                 return repository.save(model);
             }

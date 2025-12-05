@@ -6,6 +6,7 @@ public class UserDTO {
     private Integer id;
     private String nome;
     private String email;
+    private String senha;
     private String tipo;
 
     public UserDTO() {}
@@ -36,6 +37,13 @@ public class UserDTO {
     }
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public String getTipo() {

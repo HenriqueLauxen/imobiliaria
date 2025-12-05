@@ -9,14 +9,15 @@ function PaginaImoveis() {
   const [bairros, setBairros] = useState([]);
   const [tipos, setTipos] = useState([]);
   const [imoveis, setImoveis] = useState([]);
+  const [fotos, setFotos] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [formulario, setFormulario] = useState({
     titulo: '',
     precoVenda: '',
     precoAluguel: '',
-    finalidade: 'Venda',
-    status: 'Disponível',
+    finalidade: 'Residencial',
+    status: 'Ativo',
     dormitorios: '',
     banheiros: '',
     garagem: '',
@@ -40,14 +41,16 @@ function PaginaImoveis() {
   const carregarDados = async () => {
     try {
       setLoading(true);
-      const [imoveisData, bairrosData, tiposData] = await Promise.all([
+      const [imoveisData, bairrosData, tiposData, fotosData] = await Promise.all([
         api.get('/imoveis'),
         api.get('/bairros'),
-        api.get('/tiposimoveis')
+        api.get('/tiposimoveis'),
+        api.get('/fotos')
       ]);
       setImoveis(imoveisData);
       setBairros(bairrosData);
       setTipos(tiposData);
+      setFotos(fotosData);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
     } finally {
@@ -55,8 +58,28 @@ function PaginaImoveis() {
     }
   };
 
+  const getFotoCapa = (imovelId) => {
+    const fotosImovel = fotos.filter(f => f.imovel?.id === imovelId);
+    const fotoCapa = fotosImovel.find(f => f.capa);
+    return fotoCapa || fotosImovel[0] || null;
+  };
+
   const salvarImovel = async (e) => {
     e.preventDefault();
+    
+    if (!formulario.titulo.trim()) {
+      alert('O campo Título é obrigatório');
+      return;
+    }
+    if (!formulario.finalidade) {
+      alert('Selecione uma Finalidade');
+      return;
+    }
+    if (!formulario.status) {
+      alert('Selecione um Status');
+      return;
+    }
+    
     try {
       const payload = {
         ...formulario,
@@ -75,8 +98,8 @@ function PaginaImoveis() {
         titulo: '', 
         precoVenda: '', 
         precoAluguel: '',
-        finalidade: 'Venda',
-        status: 'Disponível',
+        finalidade: 'Residencial',
+        status: 'Ativo',
         dormitorios: '',
         banheiros: '',
         garagem: '',
@@ -150,10 +173,20 @@ function PaginaImoveis() {
         <Loading mensagem="Carregando imóveis..." />
       ) : modo === 'lista' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {imoveis.map((imovel) => (
+          {imoveis.map((imovel) => {
+            const fotoCapa = getFotoCapa(imovel.id);
+            return (
             <div key={imovel.id} className="bg-white p-6 rounded-lg border border-[#0B132B]/10 hover:shadow-lg transition group flex flex-col md:flex-row gap-6">
-              <div className="w-full md:w-48 h-32 bg-gray-200 rounded-md flex items-center justify-center text-gray-400">
-                <span className="text-xs">Sem Foto</span>
+              <div className="w-full md:w-48 h-32 bg-gray-200 rounded-md flex items-center justify-center text-gray-400 overflow-hidden">
+                {fotoCapa ? (
+                  <img 
+                    src={fotoCapa.caminho} 
+                    alt={imovel.titulo}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xs">Sem Foto</span>
+                )}
               </div>
               <div className="flex-1">
                 <div className="flex justify-between items-start">
@@ -181,7 +214,8 @@ function PaginaImoveis() {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg border border-[#0B132B]/10 shadow-sm">
@@ -205,9 +239,8 @@ function PaginaImoveis() {
                 value={formulario.finalidade || ''}
                 onChange={e => setFormulario({...formulario, finalidade: e.target.value})}
               >
-                <option value="Venda">Venda</option>
-                <option value="Aluguel">Aluguel</option>
-                <option value="Venda e Aluguel">Venda e Aluguel</option>
+                <option value="Residencial">Residencial</option>
+                <option value="Comercial">Comercial</option>
               </select>
             </div>
 
@@ -218,10 +251,10 @@ function PaginaImoveis() {
                 value={formulario.status || ''}
                 onChange={e => setFormulario({...formulario, status: e.target.value})}
               >
-                <option value="Disponível">Disponível</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
                 <option value="Vendido">Vendido</option>
                 <option value="Alugado">Alugado</option>
-                <option value="Reservado">Reservado</option>
               </select>
             </div>
             
@@ -359,18 +392,6 @@ function PaginaImoveis() {
                 value={formulario.cep || ''}
                 onChange={e => setFormulario({...formulario, cep: e.target.value})}
               />
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-[#0B132B] cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-5 h-5 rounded border-[#0B132B]/20"
-                  checked={formulario.destaque || false}
-                  onChange={e => setFormulario({...formulario, destaque: e.target.checked})}
-                />
-                Imóvel em Destaque
-              </label>
             </div>
 
             <div className="md:col-span-2">

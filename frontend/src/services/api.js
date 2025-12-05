@@ -1,3 +1,4 @@
+// para deploy, alterar a url /api pra a url do backend. ex: https://seu-backend.railway.app
 const API_URL = '/api';
 
 const api = {

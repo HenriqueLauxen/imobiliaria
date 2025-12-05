@@ -1,23 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, MapPin, Tags, Home, Image } from 'lucide-react';
+import { Users, MapPin, Tags, Home, Image } from 'lucide-react';
 
 function BarraLateral() {
   const location = useLocation();
   
   const menuItems = [
-    { id: 'dashboard', path: '/', label: 'Home', icon: <LayoutDashboard size={20} /> },
+    { id: 'imoveis', path: '/imoveis', label: 'Imóveis', icon: <Home size={20} /> },
     { id: 'usuarios', path: '/usuarios', label: 'Usuários', icon: <Users size={20} /> },
     { id: 'bairros', path: '/bairros', label: 'Bairros', icon: <MapPin size={20} /> },
     { id: 'tipos', path: '/tipos', label: 'Tipos de Imóveis', icon: <Tags size={20} /> },
-    { id: 'imoveis', path: '/imoveis', label: 'Imóveis', icon: <Home size={20} /> },
     { id: 'fotos', path: '/fotos', label: 'Fotos', icon: <Image size={20} /> },
   ];
 
   const isActive = (path) => {
-    if (path === '/') {
-      return location.pathname === '/' || location.pathname === '/dashboard';
-    }
     return location.pathname === path;
   };
 

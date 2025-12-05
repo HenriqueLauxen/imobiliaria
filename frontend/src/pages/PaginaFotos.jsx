@@ -44,6 +44,11 @@ function PaginaFotos() {
       alert('Selecione uma imagem para upload');
       return;
     }
+    
+    if (!formulario.imovelId) {
+      alert('Selecione um imóvel');
+      return;
+    }
 
     try {
       setUploading(true);
@@ -56,11 +61,10 @@ function PaginaFotos() {
         };
         await api.put(`/fotos/${formulario.id}`, payload);
       } else {
-        // Novo upload
         const formData = new FormData();
         formData.append('file', arquivo);
         formData.append('imovelId', formulario.imovelId);
-        formData.append('capa', formulario.capa);
+        formData.append('capa', true);
         formData.append('ordem', formulario.ordem);
 
         const response = await fetch('/api/fotos/upload', {
@@ -256,27 +260,6 @@ function PaginaFotos() {
                 <option value="">Selecione um imóvel...</option>
                 {imoveis.map(i => <option key={i.id} value={i.id}>{i.titulo}</option>)}
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#0B132B] mb-2">Ordem de Exibição</label>
-              <input 
-                type="number" 
-                min="1"
-                className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] transition"
-                value={formulario.ordem}
-                onChange={e => setFormulario({...formulario, ordem: parseInt(e.target.value) || 1})}
-              />
-            </div>
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-[#0B132B] cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-5 h-5 rounded border-[#0B132B]/20"
-                  checked={formulario.capa || false}
-                  onChange={e => setFormulario({...formulario, capa: e.target.checked})}
-                />
-                Definir como foto de capa
-              </label>
             </div>
             <div className="pt-4 flex justify-end gap-4">
               <button 

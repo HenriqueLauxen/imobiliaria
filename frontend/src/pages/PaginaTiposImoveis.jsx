@@ -27,6 +27,12 @@ function PaginaTiposImoveis() {
 
   const salvarTipo = async (e) => {
     e.preventDefault();
+    
+    if (!formulario.nome.trim()) {
+      alert('O campo Nome é obrigatório');
+      return;
+    }
+    
     try {
       if (formulario.id) {
         await api.put(`/tiposimoveis/${formulario.id}`, formulario);

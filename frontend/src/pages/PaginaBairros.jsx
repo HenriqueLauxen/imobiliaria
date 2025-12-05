@@ -27,6 +27,20 @@ function PaginaBairros() {
 
   const salvarBairro = async (e) => {
     e.preventDefault();
+    
+    if (!formulario.nome.trim()) {
+      alert('O campo Nome do Bairro é obrigatório');
+      return;
+    }
+    if (!formulario.cidade.trim()) {
+      alert('O campo Cidade é obrigatório');
+      return;
+    }
+    if (!formulario.estado.trim()) {
+      alert('O campo Estado é obrigatório');
+      return;
+    }
+    
     try {
       if (formulario.id) {
         await api.put(`/bairros/${formulario.id}`, formulario);

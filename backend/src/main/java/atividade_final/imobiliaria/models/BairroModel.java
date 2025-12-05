@@ -2,6 +2,7 @@ package atividade_final.imobiliaria.models;
 
 import java.io.Serializable;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,8 +24,10 @@ public class BairroModel implements Serializable {
 
     private String estado;
 
+    @Column(name = "cep_inicial")
     private String cepInicial;
 
+    @Column(name = "cep_final")
     private String cepFinal;
 
     public BairroModel() {}

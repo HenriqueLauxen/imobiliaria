@@ -6,7 +6,7 @@ import Loading from '../components/Loading';
 function PaginaUsuarios() {
   const [modo, setModo] = useState('lista');
   const [usuarios, setUsuarios] = useState([]);
-  const [formulario, setFormulario] = useState({ nome: '', email: '', tipo: '' });
+  const [formulario, setFormulario] = useState({ nome: '', email: '', senha: '', tipo: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,6 +27,24 @@ function PaginaUsuarios() {
 
   const salvarUsuario = async (e) => {
     e.preventDefault();
+    
+    if (!formulario.nome.trim()) {
+      alert('O campo Nome é obrigatório');
+      return;
+    }
+    if (!formulario.email.trim()) {
+      alert('O campo Email é obrigatório');
+      return;
+    }
+    if (!formulario.id && !formulario.senha.trim()) {
+      alert('O campo Senha é obrigatório');
+      return;
+    }
+    if (!formulario.tipo) {
+      alert('Selecione um Tipo de usuário');
+      return;
+    }
+    
     try {
       if (formulario.id) {
         await api.put(`/usuarios/${formulario.id}`, formulario);
@@ -35,7 +53,7 @@ function PaginaUsuarios() {
       }
       await carregarUsuarios();
       setModo('lista');
-      setFormulario({ nome: '', email: '', tipo: '' });
+      setFormulario({ nome: '', email: '', senha: '', tipo: '' });
     } catch (error) {
       alert('Erro ao salvar usuário');
     }
@@ -143,17 +161,31 @@ function PaginaUsuarios() {
                 onChange={e => setFormulario({...formulario, email: e.target.value})}
               />
             </div>
+            {!formulario.id && (
+              <div>
+                <label className="block text-sm font-medium text-[#0B132B] mb-2">Senha</label>
+                <input 
+                  type="password" 
+                  required
+                  className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition"
+                  value={formulario.senha}
+                  onChange={e => setFormulario({...formulario, senha: e.target.value})}
+                  placeholder="Mínimo 6 caracteres"
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-[#0B132B] mb-2">Tipo</label>
               <select 
+                required
                 className="w-full border border-[#0B132B]/20 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#0B132B] focus:border-transparent transition bg-white"
                 value={formulario.tipo}
                 onChange={e => setFormulario({...formulario, tipo: e.target.value})}
               >
                 <option value="">Selecione um tipo...</option>
-                <option value="Administrador">Administrador</option>
-                <option value="Corretor">Corretor</option>
-                <option value="Gerente">Gerente</option>
+                <option value="administrador">Administrador</option>
+                <option value="corretor">Corretor</option>
+                <option value="cliente">Cliente</option>
               </select>
             </div>
             <div className="pt-4 flex justify-end gap-4">

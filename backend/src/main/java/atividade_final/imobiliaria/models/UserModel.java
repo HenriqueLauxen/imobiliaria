@@ -21,15 +21,18 @@ public class UserModel implements Serializable {
 
     private String email;
 
+    private String senha;
+
     private String tipo;
 
     public UserModel() {}
 
-    public UserModel(Integer id, String nome, String email, String tipo) {
+    public UserModel(Integer id, String nome, String email, String senha, String tipo) {
         super();
         this.id = id;
         this.nome = nome;
         this.email = email;
+        this.senha = senha;
         this.tipo = tipo;
     }
 
@@ -55,6 +58,14 @@ public class UserModel implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public String getTipo() {

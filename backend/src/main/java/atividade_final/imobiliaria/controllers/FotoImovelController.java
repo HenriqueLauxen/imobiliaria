@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import atividade_final.imobiliaria.models.FotoImovelModel;
@@ -42,11 +44,33 @@ public class FotoImovelController {
         }
     }
 
+    @GetMapping(value = "/imovel/{imovelId}")
+    public ResponseEntity<List<FotoImovelModel>> findByImovelId(@PathVariable Integer imovelId) {
+        List<FotoImovelModel> list = service.findByImovelId(imovelId);
+        return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
     @PostMapping
     public ResponseEntity<FotoImovelModel> insert(@RequestBody FotoImovelModel model) {
         model = service.insert(model);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(model.getId()).toUri();
         return ResponseEntity.created(uri).body(model);
+    }
+    
+    @PostMapping(value = "/upload")
+    public ResponseEntity<?> uploadFoto(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("imovelId") Integer imovelId,
+            @RequestParam(value = "capa", required = false) Boolean capa,
+            @RequestParam(value = "ordem", required = false) Integer ordem) {
+        try {
+            FotoImovelModel foto = service.uploadFoto(file, imovelId, capa, ordem);
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(foto.getId()).toUri();
+            return ResponseEntity.created(uri).body(foto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao fazer upload: " + e.getMessage());
+        }
     }
 
     @PutMapping(value = "/{id}")
